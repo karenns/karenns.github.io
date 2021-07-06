@@ -10,7 +10,6 @@ Additional CSS
 h3 {margin:20px 0;}
 
 .cert_imgs {display: flex; gap: 30px;}
-.cert_imgs img {width: 300px;}
 
 /* The actual timeline (the vertical ruler) */
 .timeline {
