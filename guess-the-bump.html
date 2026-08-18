@@ -1,0 +1,294 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,700&family=Karla:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --plum:#2B1A2E;
+    --plum-lift:#3A2440;
+    --plum-line:rgba(246,241,232,.14);
+    --tape:#F4C55B;
+    --mint:#86D9BE;
+    --coral:#FF6A55;
+    --ivory:#F6F1E8;
+    --muted:rgba(246,241,232,.62);
+    --display:"Fraunces",Georgia,"Times New Roman",serif;
+    --body:"Karla",system-ui,-apple-system,sans-serif;
+    --mono:"Space Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  }
+
+  *{box-sizing:border-box}
+
+  .bump-app{
+    background:var(--plum);
+    color:var(--ivory);
+    font-family:var(--body);
+    font-size:16px;
+    line-height:1.5;
+    padding:34px 20px 48px;
+    margin:0 auto;
+    max-width:520px;
+    border-radius:18px;
+  }
+
+  .bump-app .eyebrow{
+    font-family:var(--mono);font-size:11px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--mint);margin:0 0 14px;
+  }
+  .bump-app h1{
+    font-family:var(--display);font-weight:700;
+    font-size:clamp(38px,10vw,58px);line-height:.98;
+    letter-spacing:-.02em;margin:0 0 14px;
+  }
+  .bump-app h1 em{font-style:italic;color:var(--tape)}
+  .bump-app .lede{color:var(--muted);margin:0 0 26px}
+
+  /* ---------- entry card ---------- */
+  .card{
+    background:var(--plum-lift);border:1px solid var(--plum-line);
+    border-radius:14px;padding:22px 20px;
+  }
+
+  .field{margin-bottom:16px}
+  .field label{
+    display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:6px;
+  }
+  .bump-app input[type=text],
+  .bump-app input[type=number]{
+    width:100%;background:rgba(0,0,0,.24);border:1px solid var(--plum-line);
+    border-radius:9px;color:var(--ivory);font-family:var(--body);
+    font-size:17px;padding:12px 13px;
+  }
+  .bump-app input:focus-visible{outline:2px solid var(--mint);outline-offset:1px}
+  .bump-app input::placeholder{color:rgba(246,241,232,.3)}
+
+  /* the measurement is the point of the page, so it gets the weight */
+  .bigwrap{position:relative}
+  .bump-app input#num{
+    font-family:var(--mono);font-size:clamp(34px,11vw,46px);font-weight:700;
+    color:var(--tape);text-align:center;padding:14px 62px 14px 18px;
+    letter-spacing:-.02em;
+  }
+  .bump-app input#num::-webkit-outer-spin-button,
+  .bump-app input#num::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .bump-app input#num{-moz-appearance:textfield}
+  .bigwrap .suffix{
+    position:absolute;right:18px;top:50%;transform:translateY(-50%);
+    font-family:var(--mono);font-size:14px;color:var(--muted);pointer-events:none;
+  }
+
+  .btn{
+    width:100%;border:0;border-radius:9px;padding:13px 14px;
+    font-family:var(--body);font-size:16px;font-weight:700;cursor:pointer;
+    background:var(--tape);color:#2B1A2E;
+  }
+  .btn:hover:not([disabled]){background:#FFD87E}
+  .btn[disabled]{opacity:.55;cursor:not-allowed}
+  .btn:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
+  .btn-ghost{
+    background:none;border:1px solid var(--plum-line);color:var(--muted);
+    font-weight:500;font-size:14px;padding:11px;
+  }
+  .btn-ghost:hover{color:var(--ivory);border-color:var(--ivory);background:none}
+
+  .msg{font-size:13px;margin:12px 0 0;min-height:1.2em;overflow-wrap:anywhere}
+  .msg.bad{color:var(--coral)}
+
+  /* ---------- locked-in state ---------- */
+  .done{text-align:center;padding:8px 0 2px}
+  .done .tick{
+    font-family:var(--mono);font-size:11px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--mint);margin:0 0 14px;
+  }
+  .done .who{font-family:var(--display);font-size:30px;font-weight:700;margin:0 0 2px;line-height:1.1}
+  .done .val{font-family:var(--mono);font-size:44px;font-weight:700;color:var(--tape);margin:0;line-height:1.2}
+  .done .note{color:var(--muted);font-size:14px;margin:10px 0 20px}
+
+  /* ---------- sync ---------- */
+  .syncbar{display:flex;align-items:center;gap:9px;margin:18px 2px 0}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:0 0 auto}
+  .dot.ok{background:var(--mint)}
+  .dot.busy{background:var(--tape);animation:pulse 1s infinite ease-in-out}
+  .dot.bad{background:var(--coral)}
+  @keyframes pulse{50%{opacity:.25}}
+  .syncbar .txt{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted)}
+  .syncbar .txt.bad{color:var(--coral)}
+
+  .hidden{display:none}
+
+  @media (prefers-reduced-motion:reduce){.bump-app *{animation:none!important;transition:none!important}}
+</style>
+
+<div class="bump-app">
+  <p class="eyebrow">Baby shower game</p>
+  <h1>Guess the <em>bump</em></h1>
+  <p class="lede">How many centimetres around is the bump? Put your name and a number down. Closest guess wins, and the tape comes out later.</p>
+
+  <section class="card" id="formCard">
+    <div class="field">
+      <label for="who">Your name</label>
+      <input type="text" id="who" maxlength="28" placeholder="Aunt Rosa" autocomplete="name">
+    </div>
+    <div class="field">
+      <label for="num">Your guess in centimetres</label>
+      <div class="bigwrap">
+        <input type="number" id="num" step="0.5" min="1" placeholder="98" inputmode="decimal">
+        <span class="suffix">cm</span>
+      </div>
+    </div>
+    <button class="btn" id="addBtn" type="button">Add my guess</button>
+    <p class="msg" id="addMsg" role="status"></p>
+  </section>
+
+  <section class="card done hidden" id="doneCard">
+    <p class="tick">Locked in</p>
+    <p class="who" id="doneWho"></p>
+    <p class="val" id="doneVal"></p>
+    <p class="note" id="doneNote">Nothing to do now but wait for the reveal.</p>
+    <button class="btn btn-ghost" id="againBtn" type="button">Add another guess</button>
+  </section>
+
+  <div class="syncbar">
+    <span class="dot" id="dot"></span>
+    <span class="txt" id="syncTxt">Connecting</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* ===================================================================
+     JSONBIN — same bin as the results page.
+     This key ships with the page, so anyone who opens it can read it.
+     Keep it scoped to this bin and rotate it after the party.
+     =================================================================== */
+  const CONFIG = {
+    binId: '6a84e585da38895dfef4c7b9',
+    key:   '$2a$10$kLF.etlb4Vmw7IKpN97q.OxphlGXuloYtq7hW8jKJDK5QCMkGzfQu'
+  };
+
+  const API = 'https://api.jsonbin.io/v3';
+  const $ = s => document.querySelector(s);
+
+  const UNIT = 'cm';   // this game is centimetres only
+
+  /* ---------- jsonbin ---------- */
+  function headers(extra){
+    return Object.assign({ 'X-Access-Key': CONFIG.key }, extra || {});
+  }
+
+  async function fail(res){
+    let detail = '';
+    try{ const j = await res.json(); detail = j.message || ''; }catch(e){}
+    if (res.status === 401 || res.status === 403) detail = detail || 'The access key was rejected.';
+    if (res.status === 404) detail = detail || 'That bin ID does not exist.';
+    if (res.status === 429) detail = detail || 'JSONBin rate limit hit. Try again in a minute.';
+    throw new Error(detail || ('JSONBin returned ' + res.status));
+  }
+
+  function normalize(v){
+    v = v && typeof v === 'object' ? v : {};
+    return {
+      unit: 'cm',
+      actual: typeof v.actual === 'number' ? v.actual : null,
+      guesses: Array.isArray(v.guesses)
+        ? v.guesses.filter(g => g && typeof g.value === 'number' && g.name)
+        : []
+    };
+  }
+
+  async function binRead(){
+    const res = await fetch(API + '/b/' + CONFIG.binId + '/latest', {
+      headers: headers({ 'X-Bin-Meta': 'false' })
+    });
+    if (!res.ok) await fail(res);
+    return normalize(await res.json());
+  }
+
+  async function binWrite(data){
+    const res = await fetch(API + '/b/' + CONFIG.binId, {
+      method: 'PUT',
+      headers: headers({ 'Content-Type': 'application/json', 'X-Bin-Versioning': 'false' }),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) await fail(res);
+  }
+
+  /* ---------- ui ---------- */
+  function setStatus(kind, text){
+    const dot = $('#dot'), txt = $('#syncTxt');
+    dot.className = 'dot' + (kind ? ' ' + kind : '');
+    txt.textContent = text;
+    txt.className = 'txt' + (kind === 'bad' ? ' bad' : '');
+  }
+
+  function say(text, kind){
+    const el = $('#addMsg');
+    el.textContent = text || '';
+    el.className = 'msg' + (kind ? ' ' + kind : '');
+  }
+
+  const fmt = n => String(Math.round(n*100)/100);
+
+  function showDone(name, value){
+    $('#doneWho').textContent = name;
+    $('#doneVal').textContent = fmt(value) + ' ' + UNIT;
+    $('#formCard').classList.add('hidden');
+    $('#doneCard').classList.remove('hidden');
+  }
+
+  function showForm(){
+    $('#who').value = ''; $('#num').value = '';
+    say('');
+    $('#doneCard').classList.add('hidden');
+    $('#formCard').classList.remove('hidden');
+    $('#who').focus();
+  }
+
+  /* ---------- submit ---------- */
+  async function submit(){
+    const btn = $('#addBtn');
+    const name = $('#who').value.trim();
+    const value = parseFloat($('#num').value);
+    if (!name){ say('Add a name so we know whose guess it is.', 'bad'); $('#who').focus(); return; }
+    if (!isFinite(value) || value <= 0 || value > 500){ say('Enter a measurement between 1 and 500.', 'bad'); $('#num').focus(); return; }
+
+    btn.disabled = true;
+    say('');
+    setStatus('busy', 'Saving');
+    try{
+      // Read first so this guess lands alongside everyone else's.
+      const game = await binRead();
+      game.guesses.push({
+        id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
+        name: name,
+        value: value,
+        at: new Date().toISOString()
+      });
+      await binWrite(game);
+      setStatus('ok', 'Saved');
+      showDone(name, value);
+    }catch(err){
+      setStatus('bad', 'Not saved');
+      say(err.message + ' Your guess was not recorded — try again.', 'bad');
+    }finally{
+      btn.disabled = false;
+    }
+  }
+
+  $('#addBtn').addEventListener('click', submit);
+  $('#againBtn').addEventListener('click', showForm);
+  ['who','num'].forEach(id => $('#'+id).addEventListener('keydown', e => { if (e.key === 'Enter') submit(); }));
+
+  (async function init(){
+    setStatus('busy', 'Connecting');
+    try{
+      const game = await binRead();
+      const n = game.guesses.length;
+      setStatus('ok', n === 0 ? 'Ready — be the first' : 'Ready — ' + n + (n === 1 ? ' guess in' : ' guesses in'));
+    }catch(err){
+      setStatus('bad', err.message);
+    }
+  })();
+})();
+</script>

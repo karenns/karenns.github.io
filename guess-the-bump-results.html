@@ -1,0 +1,582 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,700&family=Karla:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --plum:#2B1A2E;
+    --plum-lift:#3A2440;
+    --plum-line:rgba(246,241,232,.14);
+    --tape:#F4C55B;
+    --tape-deep:#C9931F;
+    --mint:#86D9BE;
+    --coral:#FF6A55;
+    --ivory:#F6F1E8;
+    --muted:rgba(246,241,232,.62);
+    --display:"Fraunces",Georgia,"Times New Roman",serif;
+    --body:"Karla",system-ui,-apple-system,sans-serif;
+    --mono:"Space Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  }
+
+  *{box-sizing:border-box}
+
+  .bump-app{
+    background:var(--plum);color:var(--ivory);font-family:var(--body);
+    font-size:16px;line-height:1.5;padding:32px 20px 56px;
+    margin:0 auto;max-width:920px;border-radius:18px;
+  }
+
+  /* ---------- hero ---------- */
+  .bump-app .eyebrow{
+    font-family:var(--mono);font-size:11px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--mint);margin:0 0 14px;
+  }
+  .bump-app h1{
+    font-family:var(--display);font-weight:700;
+    font-size:clamp(38px,7.5vw,66px);line-height:.98;
+    letter-spacing:-.02em;margin:0 0 14px;
+  }
+  .bump-app h1 em{font-style:italic;color:var(--tape)}
+  .bump-app .lede{max-width:46ch;color:var(--muted);margin:0 0 22px}
+
+  /* ---------- sync bar ---------- */
+  .syncbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 26px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:0 0 auto}
+  .dot.ok{background:var(--mint)}
+  .dot.busy{background:var(--tape);animation:pulse 1s infinite ease-in-out}
+  .dot.bad{background:var(--coral)}
+  @keyframes pulse{50%{opacity:.25}}
+  .syncbar .txt{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted)}
+  .syncbar .txt.bad{color:var(--coral)}
+  .linkbtn{
+    background:none;border:0;padding:0;cursor:pointer;
+    font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+    color:var(--mint);text-decoration:underline;text-underline-offset:3px;
+  }
+  .linkbtn:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
+
+  /* ---------- tape ---------- */
+  .tape-card{
+    background:var(--plum-lift);border:1px solid var(--plum-line);
+    border-radius:14px;padding:18px 18px 20px;margin-bottom:28px;
+  }
+  .tape-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:6px}
+  .tape-head .label{
+    font-family:var(--mono);font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--muted);
+  }
+
+
+  .tape-stage{position:relative;padding-top:14px}
+  .tape-empty{color:var(--muted);font-size:14px;text-align:center;padding:34px 10px 26px}
+
+  .flag{
+    position:absolute;transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;
+    transition:opacity .4s ease,transform .4s ease;
+  }
+  .flag .pill{
+    background:var(--plum);border:1px solid var(--plum-line);border-radius:8px;
+    padding:4px 9px;text-align:center;white-space:nowrap;
+    max-width:132px;overflow:hidden;text-overflow:ellipsis;
+  }
+  .flag .who{font-size:12px;font-weight:600;display:block;line-height:1.25}
+  .flag .num{font-family:var(--mono);font-size:11px;color:var(--tape);display:block;line-height:1.3}
+  .flag .stem{width:1px;background:var(--plum-line)}
+  .flag.dim{opacity:.3}
+  .flag.won .pill{background:var(--mint);border-color:var(--mint);color:#1B2E28}
+  .flag.won .num{color:#1B2E28}
+  .flag.won .stem{background:var(--mint);width:2px}
+
+  .tape-strip{
+    position:relative;height:58px;border-radius:6px;
+    background:
+      repeating-linear-gradient(90deg,rgba(0,0,0,.05) 0 1px,transparent 1px 7px),
+      linear-gradient(180deg,#F7D177 0%,var(--tape) 46%,var(--tape-deep) 100%);
+    box-shadow:inset 0 -2px 0 rgba(0,0,0,.18);overflow:hidden;
+  }
+  .tick{position:absolute;top:0;transform:translateX(-50%);text-align:center}
+  .tick i{display:block;width:1px;height:11px;background:rgba(43,26,46,.55);margin:0 auto}
+  .tick.major i{height:19px;width:2px;background:rgba(43,26,46,.85)}
+  .tick b{
+    display:block;font-family:var(--mono);font-size:11px;font-weight:700;
+    color:rgba(43,26,46,.85);margin-top:3px;
+  }
+
+  .needle{position:absolute;width:2px;background:var(--coral);transform:translateX(-50%);z-index:3}
+  .needle .head{
+    position:absolute;top:-30px;left:50%;transform:translateX(-50%);
+    background:var(--coral);color:#2B1A2E;font-family:var(--mono);
+    font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap;
+  }
+  .needle .head::after{
+    content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);
+    border:5px solid transparent;border-top-color:var(--coral);
+  }
+  .drop{animation:drop .55s cubic-bezier(.2,1.5,.4,1)}
+  @keyframes drop{from{opacity:0;transform:translateX(-50%) translateY(-26px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+  /* ---------- reveal panel ---------- */
+  .panel{
+    background:var(--plum-lift);border:1px solid var(--plum-line);
+    border-radius:14px;padding:20px;
+  }
+  .panel h2{font-family:var(--display);font-weight:700;font-size:22px;margin:0 0 4px}
+  .panel .hint{font-size:13px;color:var(--muted);margin:0 0 16px}
+
+  .reveal-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+  .reveal-row .field{flex:1 1 200px;margin:0}
+  .reveal-row .btn{flex:0 0 auto;width:auto;min-width:180px}
+  @media(max-width:560px){.reveal-row .btn{width:100%}}
+
+  .field label{
+    display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:5px;
+  }
+  .bump-app input[type=number]{
+    width:100%;background:rgba(0,0,0,.24);border:1px solid var(--plum-line);
+    border-radius:9px;color:var(--ivory);font-family:var(--mono);
+    font-size:18px;font-weight:700;padding:11px 12px;
+  }
+  .bump-app input:focus-visible{outline:2px solid var(--mint);outline-offset:1px}
+  .bump-app input::placeholder{color:rgba(246,241,232,.3);font-weight:400}
+
+  .btn{
+    border:0;border-radius:9px;padding:12px 18px;
+    font-family:var(--body);font-size:15px;font-weight:700;cursor:pointer;
+  }
+  .btn-reveal{background:var(--coral);color:#2B1A2E}
+  .btn-reveal:hover:not([disabled]){background:#FF8471}
+  .btn:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
+  .btn-ghost{
+    background:none;border:1px solid var(--plum-line);color:var(--muted);
+    font-weight:500;font-size:13px;padding:9px 14px;margin-top:14px;
+  }
+  .btn-ghost:hover{color:var(--ivory);border-color:var(--ivory)}
+
+  .msg{font-size:13px;margin:12px 0 0;min-height:1.2em;overflow-wrap:anywhere}
+  .msg.bad{color:var(--coral)}
+  .msg.ok{color:var(--mint)}
+
+  /* ---------- roster ---------- */
+  .roster{margin-top:30px}
+  .roster-head{
+    display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+    border-bottom:1px solid var(--plum-line);padding-bottom:8px;margin-bottom:4px;
+  }
+  .roster-head h2{font-family:var(--display);font-size:22px;font-weight:700;margin:0}
+  .roster-head .count{font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+  .row{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid var(--plum-line)}
+  .rank{
+    flex:0 0 30px;height:30px;display:grid;place-items:center;border-radius:50%;
+    border:1px solid var(--plum-line);font-family:var(--mono);font-size:12px;
+    font-weight:700;color:var(--muted);
+  }
+  .row.p1 .rank{background:var(--tape);color:#2B1A2E;border-color:var(--tape)}
+  .row.p2 .rank{background:var(--mint);color:#1B2E28;border-color:var(--mint)}
+  .row.p3 .rank{color:var(--coral);border-color:var(--coral)}
+  .row .name{flex:1 1 auto;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .row .guess{font-family:var(--mono);font-size:14px;color:var(--tape)}
+  .row .gap{font-family:var(--mono);font-size:12px;color:var(--muted);flex:0 0 auto;min-width:78px;text-align:right}
+  .row.p1 .gap{color:var(--mint)}
+  .row .kill{background:none;border:0;color:rgba(246,241,232,.35);font-size:18px;line-height:1;cursor:pointer;padding:2px 4px}
+  .row .kill:hover{color:var(--coral)}
+  .row .kill:focus-visible{outline:2px solid var(--mint);outline-offset:1px;border-radius:4px}
+
+  .footnote{margin-top:22px;font-size:12px;color:var(--muted)}
+
+  @media (prefers-reduced-motion:reduce){.bump-app *{animation:none!important;transition:none!important}}
+</style>
+
+<div class="bump-app">
+  <p class="eyebrow">Baby shower game &middot; host screen</p>
+  <h1>The <em>Result</em></h1>
+  <p class="lede">Every guess lands here as it comes in. When the real measurement is taken, drop it in below and the list re-sorts by who came closest.</p>
+
+  <div class="syncbar">
+    <span class="dot" id="dot"></span>
+    <span class="txt" id="syncTxt">Loading</span>
+    <button class="linkbtn" id="refreshBtn" type="button">Refresh</button>
+  </div>
+
+  <div class="tape-card">
+    <div class="tape-head">
+      <span class="label">The tape</span>
+      <span class="label">Centimetres</span>
+    </div>
+    <div class="tape-stage" id="stage"></div>
+  </div>
+
+  <section class="panel">
+    <h2>Reveal the winner</h2>
+    <p class="hint">Measure the bump, enter the real number, and the closest guess lights up on the tape.</p>
+    <div class="reveal-row">
+      <div class="field">
+        <label for="actual">Actual measurement (cm)</label>
+        <input type="number" id="actual" step="0.5" min="1" placeholder="102" inputmode="decimal">
+      </div>
+      <button class="btn btn-reveal" id="revealBtn" type="button">Reveal the winner</button>
+    </div>
+    <button class="btn btn-ghost" id="resetBtn" type="button">Start a new game</button>
+    <p class="msg" id="hostMsg" role="status"></p>
+  </section>
+
+  <section class="roster">
+    <div class="roster-head">
+      <h2 id="rosterTitle">Guesses</h2>
+      <span class="count" id="rosterCount">0</span>
+    </div>
+    <div id="rows"></div>
+  </section>
+
+  <p class="footnote">Guests add their guesses on the entry page. This screen pulls the same JSONBin bin every 20 seconds.</p>
+</div>
+
+<script>
+(function(){
+  /* ===================================================================
+     JSONBIN — same bin as the guest entry page.
+     =================================================================== */
+  const CONFIG = {
+    binId: '6a84e585da38895dfef4c7b9',
+    key:   '$2a$10$kLF.etlb4Vmw7IKpN97q.OxphlGXuloYtq7hW8jKJDK5QCMkGzfQu'
+  };
+
+  const API = 'https://api.jsonbin.io/v3';
+  const POLL_MS = 20000;
+  const BLANK = { unit:'cm', actual:null, guesses:[] };
+
+  let state = JSON.parse(JSON.stringify(BLANK));
+  let lastSync = null;
+  let writing = false;
+
+  const $ = s => document.querySelector(s);
+  const stage = $('#stage'), rows = $('#rows');
+
+  /* ---------- jsonbin ---------- */
+  function headers(extra){
+    return Object.assign({ 'X-Access-Key': CONFIG.key }, extra || {});
+  }
+
+  async function fail(res){
+    let detail = '';
+    try{ const j = await res.json(); detail = j.message || ''; }catch(e){}
+    if (res.status === 401 || res.status === 403) detail = detail || 'The access key was rejected.';
+    if (res.status === 404) detail = detail || 'That bin ID does not exist.';
+    if (res.status === 429) detail = detail || 'JSONBin rate limit hit. Wait a minute.';
+    throw new Error(detail || ('JSONBin returned ' + res.status));
+  }
+
+  function normalize(v){
+    v = v && typeof v === 'object' ? v : {};
+    return {
+      unit: 'cm',
+      actual: typeof v.actual === 'number' ? v.actual : null,
+      guesses: Array.isArray(v.guesses)
+        ? v.guesses.filter(g => g && typeof g.value === 'number' && g.name)
+                   .map(g => ({ id: String(g.id || Math.random()), name: String(g.name), value: g.value, at: g.at || null }))
+        : []
+    };
+  }
+
+  async function binRead(){
+    const res = await fetch(API + '/b/' + CONFIG.binId + '/latest', {
+      headers: headers({ 'X-Bin-Meta': 'false' })
+    });
+    if (!res.ok) await fail(res);
+    return normalize(await res.json());
+  }
+
+  async function binWrite(data){
+    const res = await fetch(API + '/b/' + CONFIG.binId, {
+      method: 'PUT',
+      headers: headers({ 'Content-Type': 'application/json', 'X-Bin-Versioning': 'false' }),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) await fail(res);
+  }
+
+  /* ---------- sync ---------- */
+  function setStatus(kind, text){
+    const dot = $('#dot'), txt = $('#syncTxt');
+    dot.className = 'dot' + (kind ? ' ' + kind : '');
+    txt.textContent = text;
+    txt.className = 'txt' + (kind === 'bad' ? ' bad' : '');
+  }
+
+  function syncedLabel(){
+    if (!lastSync) return 'Connected';
+    const s = Math.round((Date.now() - lastSync) / 1000);
+    if (s < 10) return 'Saved just now';
+    if (s < 60) return 'Saved ' + s + 's ago';
+    return 'Saved ' + Math.round(s/60) + 'm ago';
+  }
+
+  // Apply the change locally, then replay it on the freshest copy of the
+  // bin so a guest adding a guess right now doesn't get overwritten.
+  async function push(mutate, msgEl){
+    mutate(state);
+    render();
+    if (writing) return;
+    writing = true;
+    setStatus('busy', 'Saving');
+    try{
+      let remote = null;
+      try{ remote = await binRead(); }catch(e){}
+      if (remote){ mutate(remote); state = remote; render(); }
+      await binWrite(state);
+      lastSync = Date.now();
+      setStatus('ok', syncedLabel());
+    }catch(err){
+      setStatus('bad', 'Not saved');
+      if (msgEl) say(msgEl, err.message, 'bad');
+    }finally{
+      writing = false;
+    }
+  }
+
+  async function pull(quiet){
+    if (writing) return;
+    try{
+      if (!quiet) setStatus('busy', 'Refreshing');
+      const remote = await binRead();
+      if (JSON.stringify(remote) !== JSON.stringify(state)){ state = remote; render(); }
+      lastSync = Date.now();
+      setStatus('ok', syncedLabel());
+    }catch(err){
+      setStatus('bad', err.message);
+    }
+  }
+
+  /* ---------- helpers ---------- */
+  const fmt = n => String(Math.round(n*100)/100);
+  const UNIT = 'cm';   // this game is centimetres only
+  const unitShort = () => UNIT;
+
+  function say(el, text, kind){
+    el.textContent = text || '';
+    el.className = 'msg' + (kind ? ' ' + kind : '');
+    if (text && kind === 'ok') setTimeout(() => {
+      if (el.textContent === text){ el.textContent = ''; el.className = 'msg'; }
+    }, 4500);
+  }
+
+  function domain(){
+    const vals = state.guesses.map(g => g.value);
+    if (state.actual != null) vals.push(state.actual);
+    if (!vals.length) return null;
+    let min = Math.min.apply(null, vals), max = Math.max.apply(null, vals);
+    if (max - min < 0.5){ min -= 4; max += 4; }
+    const pad = (max - min) * 0.16;
+    return { min: min - pad, max: max + pad };
+  }
+
+  function ticks(min, max){
+    const raw = (max - min) / 7;
+    const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    const step = [1,2,2.5,5,10].map(m => m*mag).find(s => s >= raw) || 10*mag;
+    const out = [];
+    for (let v = Math.ceil(min/step)*step; v <= max; v += step) out.push(Math.round(v*1000)/1000);
+    return { list: out, step };
+  }
+
+  /* ---------- rendering ---------- */
+  function render(){
+    renderTape();
+    renderRows();
+  }
+
+  function renderTape(){
+    const d = domain();
+    stage.innerHTML = '';
+    stage.style.height = '';
+    if (!d){
+      stage.innerHTML = '<p class="tape-empty">No guesses yet. Each one gets pinned to the tape as it comes in.</p>';
+      return;
+    }
+
+    const width = stage.clientWidth || 600;
+    const pct = v => ((v - d.min) / (d.max - d.min)) * 100;
+
+    const minGapPct = (width < 520 ? 74 : 100) / width * 100;
+    const laneEnd = [];
+    const placed = state.guesses.slice().sort((a,b) => a.value - b.value).map(g => {
+      const x = pct(g.value);
+      let lane = 0;
+      while (laneEnd[lane] !== undefined && x - laneEnd[lane] < minGapPct) lane++;
+      laneEnd[lane] = x;
+      return { g, x, lane };
+    });
+    const lanes = laneEnd.length || 1;
+
+    const LANE_H = 40, STRIP_TOP = lanes * LANE_H + 34;
+    stage.style.height = (STRIP_TOP + 64) + 'px';
+
+    const best = state.actual == null ? null :
+      Math.min.apply(null, state.guesses.map(g => Math.abs(g.value - state.actual)));
+
+    placed.forEach(p => {
+      const won = best != null && Math.abs(p.g.value - state.actual) === best;
+      const el = document.createElement('div');
+      el.className = 'flag' + (best != null ? (won ? ' won' : ' dim') : '');
+      el.style.left = p.x + '%';
+      el.style.top = (p.lane * LANE_H) + 'px';
+      el.innerHTML =
+        '<div class="pill"><span class="who"></span><span class="num"></span></div>' +
+        '<div class="stem" style="height:' + (STRIP_TOP - p.lane*LANE_H - 34) + 'px"></div>';
+      el.querySelector('.who').textContent = p.g.name;
+      el.querySelector('.num').textContent = fmt(p.g.value) + ' ' + unitShort();
+      stage.appendChild(el);
+    });
+
+    const strip = document.createElement('div');
+    strip.className = 'tape-strip';
+    strip.style.position = 'absolute';
+    strip.style.left = '0'; strip.style.right = '0';
+    strip.style.top = STRIP_TOP + 'px';
+    const t = ticks(d.min, d.max);
+    t.list.forEach((v, i) => {
+      const tk = document.createElement('div');
+      tk.className = 'tick major';
+      tk.style.left = pct(v) + '%';
+      tk.innerHTML = '<i></i><b></b>';
+      tk.querySelector('b').textContent = fmt(v);
+      strip.appendChild(tk);
+      if (i < t.list.length - 1){
+        for (let k = 1; k < 4; k++){
+          const half = document.createElement('div');
+          half.className = 'tick';
+          half.style.left = pct(v + t.step*k/4) + '%';
+          half.innerHTML = '<i></i>';
+          strip.appendChild(half);
+        }
+      }
+    });
+    stage.appendChild(strip);
+
+    if (state.actual != null){
+      const n = document.createElement('div');
+      n.className = 'needle drop';
+      n.style.left = pct(state.actual) + '%';
+      n.style.top = (STRIP_TOP - 4) + 'px';
+      n.style.height = '68px';
+      n.innerHTML = '<div class="head"></div>';
+      n.querySelector('.head').textContent = 'Actual ' + fmt(state.actual) + ' ' + unitShort();
+      stage.appendChild(n);
+    }
+  }
+
+  function renderRows(){
+    const n = state.guesses.length;
+    $('#rosterCount').textContent = n + (n === 1 ? ' guess' : ' guesses');
+    $('#rosterTitle').textContent = state.actual == null ? 'Guesses' : 'Closest guesses';
+    rows.innerHTML = '';
+
+    if (!n){
+      const p = document.createElement('p');
+      p.className = 'tape-empty';
+      p.textContent = 'Nobody has guessed yet. Send guests to the entry page.';
+      rows.appendChild(p);
+      return;
+    }
+
+    let list = state.guesses.slice();
+    if (state.actual != null){
+      list.forEach(g => g._d = Math.abs(g.value - state.actual));
+      list.sort((a,b) => a._d - b._d);
+    } else {
+      list.sort((a,b) => a.value - b.value);
+    }
+
+    let lastD = null, rank = 0;
+    list.forEach((g, i) => {
+      if (state.actual != null){
+        if (g._d !== lastD){ rank = i + 1; lastD = g._d; }
+      } else rank = i + 1;
+
+      const row = document.createElement('div');
+      row.className = 'row' + (state.actual != null && rank <= 3 ? ' p' + rank : '');
+
+      const badge = document.createElement('div');
+      badge.className = 'rank';
+      badge.textContent = state.actual == null ? '\u00B7' : rank;
+
+      const name = document.createElement('div');
+      name.className = 'name';
+      name.textContent = g.name;
+
+      const guess = document.createElement('div');
+      guess.className = 'guess';
+      guess.textContent = fmt(g.value) + ' ' + unitShort();
+
+      const gap = document.createElement('div');
+      gap.className = 'gap';
+      if (state.actual != null){
+        const diff = Math.round((g.value - state.actual)*100)/100;
+        gap.textContent = diff === 0 ? 'exact' : (diff > 0 ? '+' : '') + fmt(diff);
+      }
+
+      const kill = document.createElement('button');
+      kill.className = 'kill';
+      kill.type = 'button';
+      kill.setAttribute('aria-label', 'Remove ' + g.name);
+      kill.textContent = '\u00D7';
+      kill.addEventListener('click', () => {
+        push(s => { s.guesses = s.guesses.filter(x => x.id !== g.id); }, $('#hostMsg'));
+      });
+
+      row.append(badge, name, guess, gap, kill);
+      rows.appendChild(row);
+    });
+  }
+
+  /* ---------- actions ---------- */
+  $('#revealBtn').addEventListener('click', () => {
+    const msg = $('#hostMsg');
+    const v = parseFloat($('#actual').value);
+    if (!isFinite(v) || v <= 0 || v > 500){ say(msg, 'Enter the real measurement first.', 'bad'); $('#actual').focus(); return; }
+    if (!state.guesses.length){ say(msg, 'No guesses to score yet.', 'bad'); return; }
+    push(s => { s.actual = v; }, msg);
+  });
+
+  $('#resetBtn').addEventListener('click', () => {
+    if (!confirm('Clear every guess and start over?')) return;
+    $('#actual').value = '';
+    push(s => { s.guesses = []; s.actual = null; }, $('#hostMsg'));
+  });
+
+  $('#refreshBtn').addEventListener('click', () => pull(false));
+
+  /* ---------- loops ---------- */
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(renderTape, 140);
+  });
+
+  setInterval(() => {
+    if (document.visibilityState !== 'visible') return;
+    if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+    pull(true);
+  }, POLL_MS);
+
+  setInterval(() => {
+    const t = $('#syncTxt');
+    if (t.className === 'txt' && lastSync && !writing) t.textContent = syncedLabel();
+  }, 15000);
+
+  (async function init(){
+    render();
+    setStatus('busy', 'Loading');
+    try{
+      state = await binRead();
+      lastSync = Date.now();
+      render();
+      setStatus('ok', syncedLabel());
+    }catch(err){
+      setStatus('bad', err.message);
+    }
+  })();
+})();
+</script>
