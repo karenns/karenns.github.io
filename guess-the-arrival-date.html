@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guess the Arrival Date!</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F7F4EE; --card:#FFFFFF; --ink:#2E3A2E; --muted:#7C8A7C;
+    --sage:#8FA98F; --sage-deep:#5F7A5F; --sage-soft:#E4EBE1; --sage-line:#D2DECE;
+    --gold:#C2A05A; --gold-soft:#F4EBD6;
+    --shadow:0 1px 2px rgba(46,58,46,.06), 0 8px 28px rgba(46,58,46,.07);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:Karla,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:28px 16px 60px;
+    background-image:radial-gradient(circle at 12% 8%, #EDF1E8 0%, transparent 45%),
+                     radial-gradient(circle at 88% 92%, #F5EEE0 0%, transparent 40%);
+    background-attachment:fixed;
+  }
+  .wrap{max-width:760px;margin:0 auto}
+  header{text-align:center;margin-bottom:26px}
+  .eyebrow{
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--sage-deep);font-weight:700;margin-bottom:10px
+  }
+  h1{
+    font-family:"Cormorant Garamond",Georgia,serif;
+    font-size:clamp(34px,7vw,52px); font-weight:600; line-height:1.05;
+    margin:0 0 12px;
+  }
+  .due{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--gold-soft); color:#7A6224; border:1px solid #E7D6AE;
+    padding:7px 14px;border-radius:999px;font-size:13px;font-weight:600;
+  }
+  .card{
+    background:var(--card);border:1px solid var(--sage-line);border-radius:20px;
+    padding:24px; box-shadow:var(--shadow); margin-bottom:18px;
+  }
+  label{display:block;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  input[type=text]{
+    width:100%;padding:14px 16px;font-size:16px;font-family:inherit;color:var(--ink);
+    background:#FCFBF8;border:1.5px solid var(--sage-line);border-radius:12px;outline:none;
+  }
+  input[type=text]:focus{border-color:var(--sage);background:#fff;box-shadow:0 0 0 4px rgba(143,169,143,.15)}
+  .step{display:flex;align-items:baseline;gap:10px;margin-bottom:14px}
+  .step b{
+    width:24px;height:24px;flex:none;border-radius:50%;background:var(--sage-soft);color:var(--sage-deep);
+    display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;
+  }
+  .step span{font-family:"Cormorant Garamond",serif;font-size:23px;font-weight:600}
+  .cal-month{
+    text-align:center;font-family:"Cormorant Garamond",serif;font-size:20px;font-weight:700;
+    color:var(--sage-deep);margin:6px 0 12px;letter-spacing:.04em;
+  }
+  .dow{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}
+  .dow div{text-align:center;font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+  .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .day{
+    position:relative;aspect-ratio:1/1;border:1.5px solid var(--sage-line);background:#FCFBF8;
+    border-radius:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:1px;font-family:inherit;color:var(--ink);padding:2px;
+    transition:transform .12s ease, background .12s ease, border-color .12s ease;
+  }
+  .day .num{font-size:clamp(14px,3.4vw,17px);font-weight:600;line-height:1}
+  .day .mon{font-size:9px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+  .day:hover{transform:translateY(-2px);border-color:var(--sage);background:#fff}
+  .day.duedate{border-color:var(--gold);background:var(--gold-soft)}
+  .day.duedate .mon{color:#8A6E28}
+  .day.sel{background:var(--sage-deep);border-color:var(--sage-deep);color:#fff;transform:translateY(-2px)}
+  .day.sel .mon{color:#DCE8DA}
+  .dots{display:flex;gap:2px;position:absolute;bottom:6px;left:0;right:0;justify-content:center;height:4px}
+  .dot{width:4px;height:4px;border-radius:50%;background:var(--sage)}
+  .day.sel .dot{background:#fff}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:14px;font-size:11.5px;color:var(--muted)}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  .pick{
+    margin-top:16px;text-align:center;padding:14px;border-radius:12px;background:var(--sage-soft);
+    font-size:15px;color:var(--sage-deep);font-weight:600;
+  }
+  button.go{
+    width:100%;margin-top:16px;padding:16px;border:none;border-radius:12px;cursor:pointer;
+    background:var(--sage-deep);color:#fff;font-family:inherit;font-size:15px;font-weight:700;
+    letter-spacing:.04em;transition:background .15s ease, transform .12s ease;
+  }
+  button.go:hover:not(:disabled){background:#4E664E;transform:translateY(-1px)}
+  button.go:disabled{background:#C3CFC1;cursor:not-allowed}
+  .msg{margin-top:14px;padding:13px 15px;border-radius:12px;font-size:14px;display:none}
+  .msg.ok{display:block;background:#E7F1E4;color:#3D6135;border:1px solid #CADEC4}
+  .msg.err{display:block;background:#FBEBE7;color:#9A4630;border:1px solid #F1D2CA}
+  .msg.info{display:block;background:#F1EFE8;color:#6B6558;border:1px solid #E2DED2}
+  h2{font-family:"Cormorant Garamond",serif;font-size:26px;font-weight:600;margin:0 0 14px}
+  .guess-list{list-style:none;margin:0;padding:0}
+  .guess-list li{
+    display:flex;justify-content:space-between;align-items:center;gap:12px;
+    padding:11px 2px;border-bottom:1px solid #EFEDE6;font-size:15px;
+  }
+  .guess-list li:last-child{border-bottom:none}
+  .guess-list .nm{font-weight:600}
+  .guess-list .dt{color:var(--sage-deep);font-size:13.5px;font-weight:600;white-space:nowrap}
+  .empty{color:var(--muted);font-size:14px;font-style:italic}
+  footer{text-align:center;margin-top:26px;font-size:12.5px;color:var(--muted)}
+  footer a{color:var(--sage-deep)}
+  .celebrate{font-size:40px;text-align:center;margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Baby Shower Game</div>
+    <h1>Guess the Arrival Date</h1>
+    <div class="due">Due date &middot; Sunday, October 25, 2026</div>
+  </header>
+
+  <div class="card" id="formCard">
+    <div class="step"><b>1</b><span>Your name</span></div>
+    <label for="name">Who's guessing?</label>
+    <input type="text" id="name" placeholder="e.g. Karen N." autocomplete="name" maxlength="40">
+
+    <div class="step" style="margin-top:26px"><b>2</b><span>Pick the big day</span></div>
+    <div id="calendar"></div>
+    <div class="legend">
+      <span><i style="background:var(--gold-soft);border:1.5px solid var(--gold)"></i>Due date</span>
+      <span><i style="background:var(--sage-deep)"></i>Your pick</span>
+      <span><i style="background:var(--sage)"></i>Already guessed</span>
+    </div>
+
+    <div class="pick" id="pick">No date selected yet</div>
+    <button class="go" id="submit" disabled>Lock in my guess</button>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <div class="card">
+    <h2>Guesses so far <span id="count" style="font-size:15px;color:var(--muted);font-family:Karla,sans-serif"></span></h2>
+    <ul class="guess-list" id="list"><li class="empty">Loading…</li></ul>
+  </div>
+
+  <footer>Host? Open <a href="results.html">the results page</a> to reveal the winner.</footer>
+</div>
+
+<script>
+/* ============================================================
+   CONFIG — replace these with your real JSONBin.io values
+   ============================================================ */
+const BIN_ID     = '6a85032bf5f4af5e2926aaef';       // your JSONBin bin ID
+const ACCESS_KEY = '$2a$10$Js4A16x6i8s9qvnmDDgnDO2/KJnqTwa02pmH/sQeR.Ju8D2f6hmt2';     // your JSONBin access key
+const KEY_HEADER = 'X-Access-Key'; // use 'X-Master-Key' if you pasted a master key
+/* ============================================================ */
+
+const API = 'https://api.jsonbin.io/v3/b/' + BIN_ID;
+const START = new Date(2026, 9, 11);   // Sun Oct 11, 2026  (2 weeks before)
+const END   = new Date(2026, 10, 14);  // Sat Nov 14, 2026  (2 weeks after)
+const DUE   = '2026-10-25';
+
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+const iso = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+const pretty = s => { const [y,m,d] = s.split('-').map(Number); const dt = new Date(y, m-1, d);
+  return DAYS[dt.getDay()] + ', ' + MONTHS[m-1] + ' ' + d; };
+
+let selected = null;
+let guesses  = [];
+
+/* ---------- calendar ---------- */
+function buildCalendar(){
+  const cal = document.getElementById('calendar');
+  cal.innerHTML = '';
+
+  const label = document.createElement('div');
+  label.className = 'cal-month';
+  label.textContent = 'October – November 2026';
+  cal.appendChild(label);
+
+  const dow = document.createElement('div');
+  dow.className = 'dow';
+  ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d => {
+    const e = document.createElement('div'); e.textContent = d; dow.appendChild(e);
+  });
+  cal.appendChild(dow);
+
+  const grid = document.createElement('div');
+  grid.className = 'grid';
+  grid.id = 'grid';
+
+  for (let d = new Date(START); d <= END; d.setDate(d.getDate()+1)) {
+    const key = iso(d);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'day' + (key === DUE ? ' duedate' : '');
+    btn.dataset.date = key;
+    btn.setAttribute('aria-label', pretty(key));
+    btn.innerHTML = '<span class="num">' + d.getDate() + '</span>' +
+                    '<span class="mon">' + (key === DUE ? 'DUE' : MONTHS[d.getMonth()].slice(0,3)) + '</span>' +
+                    '<span class="dots"></span>';
+    btn.addEventListener('click', () => select(key));
+    grid.appendChild(btn);
+  }
+  cal.appendChild(grid);
+}
+
+function select(key){
+  selected = key;
+  document.querySelectorAll('.day').forEach(b => b.classList.toggle('sel', b.dataset.date === key));
+  document.getElementById('pick').textContent = 'Your guess: ' + pretty(key) + ', 2026';
+  checkReady();
+}
+
+function checkReady(){
+  const ok = selected && document.getElementById('name').value.trim().length > 0;
+  document.getElementById('submit').disabled = !ok;
+}
+
+function paintDots(){
+  const counts = {};
+  guesses.forEach(g => counts[g.date] = (counts[g.date]||0) + 1);
+  document.querySelectorAll('.day').forEach(b => {
+    const n = Math.min(counts[b.dataset.date] || 0, 4);
+    b.querySelector('.dots').innerHTML = '<span class="dot"></span>'.repeat(n);
+  });
+}
+
+function renderList(){
+  const ul = document.getElementById('list');
+  document.getElementById('count').textContent = guesses.length ? '(' + guesses.length + ')' : '';
+  if (!guesses.length){ ul.innerHTML = '<li class="empty">No guesses yet — be the first!</li>'; return; }
+  const sorted = guesses.slice().sort((a,b) => a.date.localeCompare(b.date) || a.name.localeCompare(b.name));
+  ul.innerHTML = sorted.map(g =>
+    '<li><span class="nm">' + esc(g.name) + '</span><span class="dt">' + pretty(g.date) + '</span></li>'
+  ).join('');
+}
+
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function show(type, text){
+  const m = document.getElementById('msg');
+  m.className = 'msg ' + type;
+  m.innerHTML = text;
+}
+
+/* ---------- JSONBin ---------- */
+async function loadGuesses(){
+  const res = await fetch(API + '/latest', { headers: { [KEY_HEADER]: ACCESS_KEY } });
+  if (!res.ok) throw new Error('Read failed (' + res.status + ')');
+  const data = await res.json();
+  const rec = data.record;
+  return Array.isArray(rec) ? rec : (Array.isArray(rec && rec.guesses) ? rec.guesses : []);
+}
+
+async function saveGuesses(list){
+  const res = await fetch(API, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', [KEY_HEADER]: ACCESS_KEY, 'X-Bin-Versioning': 'false' },
+    body: JSON.stringify({ guesses: list })
+  });
+  if (!res.ok) throw new Error('Save failed (' + res.status + ')');
+}
+
+async function refresh(){
+  try {
+    guesses = await loadGuesses();
+    renderList(); paintDots();
+  } catch (e) {
+    document.getElementById('list').innerHTML = '<li class="empty">Could not load guesses — check the JSONBin settings in this file.</li>';
+    console.error(e);
+  }
+}
+
+/* ---------- submit ---------- */
+document.getElementById('name').addEventListener('input', checkReady);
+
+document.getElementById('submit').addEventListener('click', async () => {
+  const btn  = document.getElementById('submit');
+  const name = document.getElementById('name').value.trim();
+  if (!name || !selected) return;
+
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    const current = await loadGuesses();                       // re-read so nobody's guess is lost
+    const dup = current.find(g => g.name.toLowerCase() === name.toLowerCase());
+    if (dup) {
+      dup.date = selected; dup.at = new Date().toISOString();
+    } else {
+      current.push({ name: name, date: selected, at: new Date().toISOString() });
+    }
+    await saveGuesses(current);
+    guesses = current;
+    renderList(); paintDots();
+
+    document.getElementById('formCard').innerHTML =
+      '<div class="celebrate">&#127881;</div>' +
+      '<h2 style="text-align:center">Guess locked in!</h2>' +
+      '<p style="text-align:center;font-size:16px;margin:0 0 6px"><b>' + esc(name) + '</b> says baby arrives on</p>' +
+      '<p style="text-align:center;font-family:\'Cormorant Garamond\',serif;font-size:30px;font-weight:600;color:var(--sage-deep);margin:0 0 20px">' +
+        pretty(selected) + ', 2026</p>' +
+      '<button class="go" onclick="location.reload()">Add another guess</button>';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch (e) {
+    console.error(e);
+    btn.disabled = false; btn.textContent = 'Lock in my guess';
+    show('err', "Couldn't save that guess. Check your internet connection and the JSONBin settings, then try again.");
+  }
+});
+
+buildCalendar();
+refresh();
+</script>
+</body>
+</html>
